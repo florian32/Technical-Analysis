@@ -24,4 +24,8 @@ response_stocks = requests.get(STOCK_ENDPOINT, params=STOCK_PARAMETERS)
 response_stocks.raise_for_status()
 data = response_stocks.json()
 data = data["Time Series (Daily)"]
+df = pd.DataFrame.from_dict(data)
+df = df.transpose()
+df = df.rename(columns={"1. open": "open", "2. high": "high", "3. low": "low", "4. close": "close", "5. volume": "volume"})
+print(df.head())
 
