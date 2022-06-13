@@ -1,5 +1,7 @@
 import requests
 import pandas as pd
+import matplotlib.pyplot as plt
+
 from datetime import datetime
 
 API_KEY_STOCK = 'MUP3M9P3V54U2WGF'
@@ -26,6 +28,11 @@ data = response_stocks.json()
 data = data["Time Series (Daily)"]
 df = pd.DataFrame.from_dict(data)
 df = df.transpose()
-df = df.rename(columns={"1. open": "open", "2. high": "high", "3. low": "low", "4. close": "close", "5. volume": "volume"})
+df = df.rename(
+    columns={"1. open": "open", "2. high": "high", "3. low": "low", "4. close": "close", "5. volume": "volume"})
+df.reset_index(inplace=True)
+df = df.rename(columns={'index': 'date'})
 print(df.head())
 
+# plt.plot(test_df.index, test_df['close'])
+# plt.show()
