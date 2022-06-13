@@ -23,4 +23,5 @@ STOCK_SEARCH_PARAMETERS = {
 response_stocks = requests.get(STOCK_ENDPOINT, params=STOCK_PARAMETERS)
 response_stocks.raise_for_status()
 data = response_stocks.json()
+data = data["Time Series (Daily)"]
 
