@@ -2,7 +2,16 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from datetime import datetime
+
+def plot(x, y):
+    plt.figure(figsize=(16, 10))
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.xlabel('Date', fontsize=14)
+    plt.ylabel('close', fontsize=14)
+    plt.plot(x, y)
+    plt.show()
+
 
 API_KEY_STOCK = 'MUP3M9P3V54U2WGF'
 
@@ -40,13 +49,4 @@ for column in df.columns:
     df[column] = df[column].astype(float)
 
 print(df.head())
-
-plt.figure(figsize=(16, 10))
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
-plt.xlabel('Date', fontsize=14)
-plt.ylabel('close', fontsize=14)
-plt.plot(df.index, df["close"])
-plt.show()
-
-
+plot(df.index, df["close"])
