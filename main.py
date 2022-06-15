@@ -32,7 +32,19 @@ df = df.rename(
     columns={"1. open": "open", "2. high": "high", "3. low": "low", "4. close": "close", "5. volume": "volume"})
 df.reset_index(inplace=True)
 df = df.rename(columns={'index': 'date'})
+df['date'] = pd.to_datetime(df['date'])
+df = df.set_index('date')
+df = df.sort_values(by="date")
+df['close'] = df['close'].astype(float)
+
 print(df.head())
 
-# plt.plot(test_df.index, test_df['close'])
-# plt.show()
+plt.figure(figsize=(16,10))
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.xlabel('Date', fontsize=14)
+plt.ylabel('close', fontsize=14)
+plt.plot(df.index, df["close"])
+plt.show()
+
+
