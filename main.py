@@ -35,11 +35,13 @@ df = df.rename(columns={'index': 'date'})
 df['date'] = pd.to_datetime(df['date'])
 df = df.set_index('date')
 df = df.sort_values(by="date")
-df['close'] = df['close'].astype(float)
+
+for column in df.columns:
+    df[column] = df[column].astype(float)
 
 print(df.head())
 
-plt.figure(figsize=(16,10))
+plt.figure(figsize=(16, 10))
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.xlabel('Date', fontsize=14)
