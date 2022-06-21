@@ -7,8 +7,8 @@ def plot(x, y):
     plt.figure(figsize=(16, 10))
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
-    plt.xlabel('Date', fontsize=14)
-    plt.ylabel('close', fontsize=14)
+    plt.xlabel('Date', fontsize=15)
+    plt.ylabel('close', fontsize=15)
     plt.plot(x, y)
     plt.show()
 
