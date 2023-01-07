@@ -1,0 +1,27 @@
+body {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+}
+
+.top{
+    padding-top: 5%;
+    text-align: center;
+}
+
+.h2_header{
+    padding-bottom: 2%;
+}
+
+.text-input{
+    font-size: 25px;
+    margin: 0 auto;
+    text-align: center;
+    width: 10%;
+    margin-bottom: 3%;
+}
+
+.plot{
+
+}

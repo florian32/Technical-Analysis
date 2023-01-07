@@ -11,12 +11,11 @@ import yfinance as yf
 
 
 class Stock:
-    def __init__(self, symbol, start, end):
+    def __init__(self, symbol, timestamp):
         self.max_min = None
         self.symbol = symbol
-        self.start = start
-        self.end = end
-        self.df = yf.download(tickers=self.symbol, start=self.start, end=self.end)
+        self.timestamp = timestamp
+        self.df = yf.download(tickers=self.symbol, period=timestamp)
         self.patterns = defaultdict(list)
 
     def get_min_max(self, smoothing, window_range):
@@ -47,6 +46,9 @@ class Stock:
             self.max_min = max_min.set_index('day_num')['Close']
         except KeyError:
             self.max_min = max_min.set_index('day_num')
+        prices.plot()
+        plt.scatter(self.max_min.index, self.max_min.values, color="orange", alpha=0.5)
+        plt.savefig("klementynka.png")
 
     def find_inverse_head_and_shoulders(self, stock_symbol=None):
         # Window range is 5 units
@@ -70,7 +72,7 @@ class Stock:
         if len(self.patterns) == 0:
             pass
         else:
-            num_pat = len([x for x in patterns.items()][0][1])
+            num_pat = len([x for x in self.patterns.items()][0][1])
             f, axes = plt.subplots(1, 2, figsize=(16, 5))
             axes = axes.flatten()
             try:
@@ -91,4 +93,5 @@ class Stock:
                     plt.yticks([])
             plt.tight_layout()
             plt.title('{}: {}: EMA {}, Window {} ({} patterns)'.format(self.symbol, incr, ema, window, num_pat))
+            plt.savefig("./static/img/test.png")
 
