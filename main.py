@@ -14,8 +14,8 @@ def home():
         timestamp = request.form.get("timestamp")
         current_stock = Stock(stock_symbol, timestamp)
 
-        smoothing = 1
-        window_range = 10
+        smoothing = 2
+        window_range = 20
 
         current_stock.get_min_max(smoothing, window_range)
         current_stock.find_inverse_head_and_shoulders()

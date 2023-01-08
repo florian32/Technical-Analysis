@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -46,9 +47,6 @@ class Stock:
             self.max_min = max_min.set_index('day_num')['Close']
         except KeyError:
             self.max_min = max_min.set_index('day_num')
-        prices.plot()
-        plt.scatter(self.max_min.index, self.max_min.values, color="orange", alpha=0.5)
-        plt.savefig("klementynka.png")
 
     def find_inverse_head_and_shoulders(self, stock_symbol=None):
         # Window range is 5 units
@@ -68,7 +66,7 @@ class Stock:
 
     def plot_minmax_patterns(self, window, ema):
         incr = str((self.df.index[1] - self.df.index[0]).seconds / 60)
-
+        max_min = self.max_min
         if len(self.patterns) == 0:
             pass
         else:
@@ -80,8 +78,7 @@ class Stock:
             except KeyError:
                 prices_ = self.df.reset_index()[self.symbol]
                 max_min = self.max_min[self.symbol]
-            axes[0].plot(prices_)
-            axes[0].scatter(max_min.index, max_min, s=100, alpha=.3, color='orange')
+            axes[0].plot(self.df["Close"])
             axes[1].plot(prices_)
             for name, end_day_nums in self.patterns.items():
                 for i, tup in enumerate(end_day_nums):
@@ -93,5 +90,6 @@ class Stock:
                     plt.yticks([])
             plt.tight_layout()
             plt.title('{}: {}: EMA {}, Window {} ({} patterns)'.format(self.symbol, incr, ema, window, num_pat))
-            plt.savefig("./static/img/test.png")
-
+            image_timestamp = str(time.time()).split(".")[0]
+            plt.savefig(f"./static/img/{image_timestamp}.png")
+            print("znaleziono")
