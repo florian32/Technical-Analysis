@@ -19,7 +19,8 @@ def home():
 
         current_stock.get_min_max(smoothing, window_range)
         current_stock.find_inverse_head_and_shoulders()
-        current_stock.plot_minmax_patterns(window_range, smoothing)
+        image_dir, patterns_num = current_stock.plot_minmax_patterns(window_range, smoothing)
+        return render_template("index.html", image_dir=image_dir, pattern_num=patterns_num)
     return render_template("index.html")
 
 

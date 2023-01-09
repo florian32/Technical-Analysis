@@ -1,7 +1,10 @@
 import time
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 from collections import defaultdict
 from scipy.signal import argrelextrema
 import cufflinks as cf
@@ -65,11 +68,18 @@ class Stock:
                 self.patterns['IHS'].append((window.index[0], window.index[-1]))
 
     def plot_minmax_patterns(self, window, ema):
-        incr = str((self.df.index[1] - self.df.index[0]).seconds / 60)
-        max_min = self.max_min
         if len(self.patterns) == 0:
-            pass
+            prices = self.df["Close"]
+            image_timestamp = str(time.time()).split(".")[0]
+            image_dir = f"./static/img/no-patterns-{image_timestamp}.png"
+            prices.plot()
+            plt.savefig(image_dir)
+            plt.close()
+            return image_dir, 0
+
         else:
+            incr = str((self.df.index[1] - self.df.index[0]).seconds / 60)
+            max_min = self.max_min
             num_pat = len([x for x in self.patterns.items()][0][1])
             f, axes = plt.subplots(1, 2, figsize=(16, 5))
             axes = axes.flatten()
@@ -91,5 +101,7 @@ class Stock:
             plt.tight_layout()
             plt.title('{}: {}: EMA {}, Window {} ({} patterns)'.format(self.symbol, incr, ema, window, num_pat))
             image_timestamp = str(time.time()).split(".")[0]
-            plt.savefig(f"./static/img/{image_timestamp}.png")
-            print("znaleziono")
+            image_dir = f"./static/img/{image_timestamp}.png"
+            plt.savefig(image_dir)
+            plt.close()
+            return image_dir, num_pat
