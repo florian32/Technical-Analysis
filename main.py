@@ -12,6 +12,10 @@ def home():
     if request.method == "POST":
         stock_symbol = request.form.get("stock-name")
         timestamp = request.form.get("timestamp")
+        resistance_lines = request.form.get("resistance_levels")
+        formations = request.form.get("formations")
+        sma = request.form.get("sma")
+        print(f"resistance: {resistance_lines} formations: {formations} sma: {sma}")
         current_stock = Stock(stock_symbol, timestamp)
 
         smoothing = 2
