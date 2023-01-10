@@ -67,8 +67,9 @@ class Stock:
             if a < b and c < a and c < e and c < d and e < d and abs(b - d) <= np.mean([b, d]) * 0.02:
                 self.patterns['IHS'].append((window.index[0], window.index[-1]))
 
-    def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=True):
-        if len(self.patterns) == 0:
+    def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=False):
+        if len(self.patterns) == 0 or (not sma and not resistance_levels and not formations):
+            print("dziala if")
             prices = self.df["Close"]
             image_timestamp = str(time.time()).split(".")[0]
             image_dir = f"./static/img/no-patterns-{image_timestamp}.png"
