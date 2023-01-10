@@ -68,12 +68,15 @@ class Stock:
                 self.patterns['IHS'].append((window.index[0], window.index[-1]))
 
     def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=False):
-        if len(self.patterns) == 0 or (not sma and not resistance_levels and not formations):
-            print("dziala if")
+        if len(self.patterns) == 0 or not formations:
             prices = self.df["Close"]
             image_timestamp = str(time.time()).split(".")[0]
             image_dir = f"./static/img/no-patterns-{image_timestamp}.png"
             prices.plot()
+            if sma:
+                price_avg = prices.rolling(window=7).mean()
+                price_avg.plot()
+                plt.legend(["Price", "SMA"])
             plt.savefig(image_dir)
             plt.close()
             return image_dir, 0
@@ -91,6 +94,10 @@ class Stock:
                 max_min = self.max_min[self.symbol]
             axes[0].plot(self.df["Close"])
             axes[1].plot(prices_)
+            if sma:
+                price_avg = prices_.rolling(window=7).mean()
+                axes[1].plot(price_avg)
+                plt.legend(["Price", "SMA"])
             for name, end_day_nums in self.patterns.items():
                 for i, tup in enumerate(end_day_nums):
                     sd = tup[0]
