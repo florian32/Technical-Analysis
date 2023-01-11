@@ -106,19 +106,29 @@ class Stock:
             prices = self.df["Close"]
             image_timestamp = str(time.time()).split(".")[0]
             image_dir = f"./static/img/no-patterns-{image_timestamp}.png"
-            prices.plot()
+            prices.plot(label="Price")
             if sma:
                 price_avg = prices.rolling(window=7).mean()
-                price_avg.plot()
+                price_avg.plot(color='m', linestyle=':', label="SMA")
                 plt.legend(["Price", "SMA"])
             if resistance_levels:
                 res_lines = self.find_res_lines()
                 supp_lines = self.find_supp_lines()
+                counter = 0
                 for line in supp_lines:
-                    plt.axhline(y=line, color='b', linestyle=':', label="Support line")
+                    if counter == 0:
+                        plt.axhline(y=line, color='b', linestyle=':', label="Support line")
+                    else:
+                        plt.axhline(y=line, color='b', linestyle=':')
+                    counter += 1
+                counter = 0
                 for line in res_lines:
-                    plt.axhline(y=line, color='r', linestyle=':', label="Resistance line")
-
+                    if counter == 0:
+                        plt.axhline(y=line, color='r', linestyle=':', label="Resistance line")
+                    else:
+                        plt.axhline(y=line, color='r', linestyle=':')
+                    counter += 1
+                plt.legend()
             plt.savefig(image_dir)
             plt.close()
             return image_dir, 0
