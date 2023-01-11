@@ -156,10 +156,32 @@ class Stock:
                     ed = tup[1]
                     axes[1].scatter(max_min.loc[sd:ed].index,
                                     max_min.loc[sd:ed].values,
-                                    s=200, alpha=.3)
+                                    s=200, alpha=.3, label="IHS")
                     plt.yticks([])
             plt.tight_layout()
             plt.title('{}: {}: EMA {}, Window {} ({} patterns)'.format(self.symbol, incr, ema, window, num_pat))
+            if sma:
+                price_avg = prices_.rolling(window=7).mean()
+                price_avg.plot(color='m', linestyle=':', label="SMA")
+            if resistance_levels:
+                res_lines = self.find_res_lines()
+                supp_lines = self.find_supp_lines()
+                counter = 0
+                for line in supp_lines:
+                    if counter == 0:
+                        plt.axhline(y=line, color='b', linestyle=':', label="Support line")
+                    else:
+                        plt.axhline(y=line, color='b', linestyle=':')
+                    counter += 1
+                counter = 0
+                for line in res_lines:
+                    if counter == 0:
+                        plt.axhline(y=line, color='r', linestyle=':', label="Resistance line")
+                    else:
+                        plt.axhline(y=line, color='r', linestyle=':')
+                    counter += 1
+
+            plt.legend()
             image_timestamp = str(time.time()).split(".")[0]
             image_dir = f"./static/img/{image_timestamp}.png"
             plt.savefig(image_dir)
