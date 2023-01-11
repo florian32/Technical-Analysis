@@ -67,6 +67,40 @@ class Stock:
             if a < b and c < a and c < e and c < d and e < d and abs(b - d) <= np.mean([b, d]) * 0.02:
                 self.patterns['IHS'].append((window.index[0], window.index[-1]))
 
+    def find_supp_lines(self):
+        supp_lines = []
+        # Window range is 5 units
+        for i in range(5, len(self.max_min)):
+            window = self.max_min.iloc[i - 5:i]
+
+            # Pattern must play out in less than n units
+            if window.index[-1] - window.index[0] > 100:
+                continue
+            a, b, c, d, e = window.iloc[0:5]
+
+            # IHS
+            if c < b and c < d < e and b < a:
+                supp_lines.append(c)
+
+        return supp_lines
+
+    def find_res_lines(self):
+        res_lines = []
+        # Window range is 5 units
+        for i in range(5, len(self.max_min)):
+            window = self.max_min.iloc[i - 5:i]
+
+            # Pattern must play out in less than n units
+            if window.index[-1] - window.index[0] > 100:
+                continue
+            a, b, c, d, e = window.iloc[0:5]
+
+            # IHS
+            if c > b and c > d > e and b > a:
+                res_lines.append(c)
+
+        return res_lines
+
     def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=False):
         if len(self.patterns) == 0 or not formations:
             prices = self.df["Close"]
@@ -77,6 +111,14 @@ class Stock:
                 price_avg = prices.rolling(window=7).mean()
                 price_avg.plot()
                 plt.legend(["Price", "SMA"])
+            if resistance_levels:
+                res_lines = self.find_res_lines()
+                supp_lines = self.find_supp_lines()
+                for line in supp_lines:
+                    plt.axhline(y=line, color='b', linestyle=':', label="Support line")
+                for line in res_lines:
+                    plt.axhline(y=line, color='r', linestyle=':', label="Resistance line")
+
             plt.savefig(image_dir)
             plt.close()
             return image_dir, 0
