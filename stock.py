@@ -67,12 +67,68 @@ class Stock:
             if a < b and c < a and c < e and c < d and e < d and abs(b - d) <= np.mean([b, d]) * 0.02:
                 self.patterns['IHS'].append((window.index[0], window.index[-1]))
 
-    def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=True):
-        if len(self.patterns) == 0:
+    def find_supp_lines(self):
+        supp_lines = []
+        # Window range is 5 units
+        for i in range(5, len(self.max_min)):
+            window = self.max_min.iloc[i - 5:i]
+
+            # Pattern must play out in less than n units
+            if window.index[-1] - window.index[0] > 100:
+                continue
+            a, b, c, d, e = window.iloc[0:5]
+
+            # IHS
+            if c < b and c < d < e and b < a:
+                supp_lines.append(c)
+
+        return supp_lines
+
+    def find_res_lines(self):
+        res_lines = []
+        # Window range is 5 units
+        for i in range(5, len(self.max_min)):
+            window = self.max_min.iloc[i - 5:i]
+
+            # Pattern must play out in less than n units
+            if window.index[-1] - window.index[0] > 100:
+                continue
+            a, b, c, d, e = window.iloc[0:5]
+
+            # IHS
+            if c > b and c > d > e and b > a:
+                res_lines.append(c)
+
+        return res_lines
+
+    def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=False):
+        if len(self.patterns) == 0 or not formations:
             prices = self.df["Close"]
             image_timestamp = str(time.time()).split(".")[0]
             image_dir = f"./static/img/no-patterns-{image_timestamp}.png"
-            prices.plot()
+            prices.plot(label="Price")
+            if sma:
+                price_avg = prices.rolling(window=7).mean()
+                price_avg.plot(color='m', linestyle=':', label="SMA")
+                plt.legend(["Price", "SMA"])
+            if resistance_levels:
+                res_lines = self.find_res_lines()
+                supp_lines = self.find_supp_lines()
+                counter = 0
+                for line in supp_lines:
+                    if counter == 0:
+                        plt.axhline(y=line, color='b', linestyle=':', label="Support line")
+                    else:
+                        plt.axhline(y=line, color='b', linestyle=':')
+                    counter += 1
+                counter = 0
+                for line in res_lines:
+                    if counter == 0:
+                        plt.axhline(y=line, color='r', linestyle=':', label="Resistance line")
+                    else:
+                        plt.axhline(y=line, color='r', linestyle=':')
+                    counter += 1
+                plt.legend()
             plt.savefig(image_dir)
             plt.close()
             return image_dir, 0
@@ -90,16 +146,42 @@ class Stock:
                 max_min = self.max_min[self.symbol]
             axes[0].plot(self.df["Close"])
             axes[1].plot(prices_)
+            if sma:
+                price_avg = prices_.rolling(window=7).mean()
+                axes[1].plot(price_avg)
+                plt.legend(["Price", "SMA"])
             for name, end_day_nums in self.patterns.items():
                 for i, tup in enumerate(end_day_nums):
                     sd = tup[0]
                     ed = tup[1]
                     axes[1].scatter(max_min.loc[sd:ed].index,
                                     max_min.loc[sd:ed].values,
-                                    s=200, alpha=.3)
+                                    s=200, alpha=.3, label="IHS")
                     plt.yticks([])
             plt.tight_layout()
             plt.title('{}: {}: EMA {}, Window {} ({} patterns)'.format(self.symbol, incr, ema, window, num_pat))
+            if sma:
+                price_avg = prices_.rolling(window=7).mean()
+                price_avg.plot(color='m', linestyle=':', label="SMA")
+            if resistance_levels:
+                res_lines = self.find_res_lines()
+                supp_lines = self.find_supp_lines()
+                counter = 0
+                for line in supp_lines:
+                    if counter == 0:
+                        plt.axhline(y=line, color='b', linestyle=':', label="Support line")
+                    else:
+                        plt.axhline(y=line, color='b', linestyle=':')
+                    counter += 1
+                counter = 0
+                for line in res_lines:
+                    if counter == 0:
+                        plt.axhline(y=line, color='r', linestyle=':', label="Resistance line")
+                    else:
+                        plt.axhline(y=line, color='r', linestyle=':')
+                    counter += 1
+
+            plt.legend()
             image_timestamp = str(time.time()).split(".")[0]
             image_dir = f"./static/img/{image_timestamp}.png"
             plt.savefig(image_dir)

@@ -12,10 +12,9 @@ def home():
     if request.method == "POST":
         stock_symbol = request.form.get("stock-name")
         timestamp = request.form.get("timestamp")
-        resistance_lines = request.form.get("resistance_levels")
-        formations = request.form.get("formations")
+        res_lines = request.form.get("resistance_levels")
+        formation = request.form.get("formations")
         sma = request.form.get("sma")
-        print(f"resistance: {resistance_lines} formations: {formations} sma: {sma}")
         current_stock = Stock(stock_symbol, timestamp)
 
         smoothing = 2
@@ -23,7 +22,7 @@ def home():
 
         current_stock.get_min_max(smoothing, window_range)
         current_stock.find_inverse_head_and_shoulders()
-        image_dir, patterns_num = current_stock.plot_minmax_patterns(window_range, smoothing)
+        image_dir, patterns_num = current_stock.plot_minmax_patterns(window_range, smoothing, sma, res_lines, formation)
         return render_template("index.html", image_dir=image_dir, pattern_num=patterns_num)
     return render_template("index.html")
 
