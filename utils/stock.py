@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from collections import defaultdict
+from config import config
 from scipy.signal import argrelextrema
 import cufflinks as cf
 from pandas_datareader import data
@@ -22,22 +23,22 @@ class Stock:
         self.df = yf.download(tickers=self.symbol, period=timestamp)
         self.patterns = defaultdict(list)
 
-    def get_min_max(self, smoothing, window_range):
+    def get_min_max(self):
         prices = self.df["Close"]
         try:
-            smooth_prices = prices['Close'].rolling(window=smoothing).mean().dropna()
+            smooth_prices = prices['Close'].rolling(window=config.SMOOTHING).mean().dropna()
         except KeyError:
-            smooth_prices = prices.rolling(window=smoothing).mean().dropna()
+            smooth_prices = prices.rolling(window=config.SMOOTHING).mean().dropna()
         local_max = argrelextrema(smooth_prices.values, np.greater)[0]
         local_min = argrelextrema(smooth_prices.values, np.less)[0]
         price_local_max_dt = []
         for i in local_max:
-            if (i > window_range) and (i < len(prices) - window_range):
-                price_local_max_dt.append(prices.iloc[i - window_range:i + window_range].idxmax())
+            if (i > config.WINDOW_RANGE) and (i < len(prices) - config.WINDOW_RANGE):
+                price_local_max_dt.append(prices.iloc[i - config.WINDOW_RANGE:i + config.WINDOW_RANGE].idxmax())
         price_local_min_dt = []
         for i in local_min:
-            if (i > window_range) and (i < len(prices) - window_range):
-                price_local_min_dt.append(prices.iloc[i - window_range:i + window_range].idxmin())
+            if (i > config.WINDOW_RANGE) and (i < len(prices) - config.WINDOW_RANGE):
+                price_local_min_dt.append(prices.iloc[i - config.WINDOW_RANGE:i + config.WINDOW_RANGE].idxmin())
         maxima = pd.DataFrame(prices.loc[price_local_max_dt])
         minima = pd.DataFrame(prices.loc[price_local_min_dt])
         max_min = pd.concat([maxima, minima]).sort_index()
@@ -86,11 +87,11 @@ class Stock:
                 res_lines.append(c)
         return res_lines
 
-    def plot_minmax_patterns(self, window, ema, sma=False, resistance_levels=False, formations=False):
+    def plot_minmax_patterns(self, sma=False, resistance_levels=False, formations=False):
         if len(self.patterns) == 0 or not formations:
             prices = self.df["Close"]
             image_timestamp = str(time.time()).split(".")[0]
-            image_dir = f"./static/img/no-patterns-{image_timestamp}.png"
+            image_dir = f"./temp/img/no-patterns-{image_timestamp}.png"
             prices.plot(label="Price")
             plt.title(self.symbol)
             plt.legend()
@@ -176,7 +177,7 @@ class Stock:
             plt.legend()
             plt.ylabel("Price [USD]")
             image_timestamp = str(time.time()).split(".")[0]
-            image_dir = f"./static/img/{image_timestamp}.png"
+            image_dir = f"./temp/img/{image_timestamp}.png"
             plt.savefig(image_dir)
             plt.close()
             return image_dir, num_pat
