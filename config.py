@@ -1,9 +1,12 @@
 import os
 
+
 class Config:
-    MARKETAUX_ENDPOINT = "https://api.marketaux.com/v1/news/all"
-    MARKETAUX_TOKEN = "2vHzc8RiSPbcQehAKu4Wig92ZurYExbjlogUht6i"
-    SECRET_KEY = "2vHzc8RiSPbcQehAKu4Wig92ZurYExbjlogUht6i"
+    MARKETAUX_ENDPOINT: str = os.getenv("MARKETAUX_ENDPOINT")
+    MARKETAUX_TOKEN: str = os.getenv("MARKETAUX_TOKEN")
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
+    SMOOTHING = 3
+    WINDOW_RANGE = 1
 
 
 config = Config()
