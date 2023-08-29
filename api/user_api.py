@@ -9,3 +9,4 @@ from config import config
 
 blueprint = Blueprint("api/users", __name__, url_prefix="/api")
 api = Api(blueprint)
+
