@@ -33,14 +33,16 @@ class NewsListResource(QueryParamsParseMixin, Resource):
 class StockAnalysisResource(QueryParamsParseMixin, Resource):
     query_params = {
         "timestamp": lambda req: str(req.args.get("timestamp")),
-        "analysis_types": lambda req: str(req.args.get("analysis_types", 3)).split(','),
+        "sma": lambda req: str(req.args.get("sma")),
+        "res": lambda req: str(req.args.get("res")),
+        "formations": lambda req: str(req.args.get("formations")),
     }
 
     def post(self, symbol) -> Tuple[Dict, int]:
         stock = Stock(symbol, self._request_query_parameters["timestamp"])
         stock.get_min_max()
         stock.find_patterns()
-        image_dir, patterns_num = stock.plot_minmax_patterns(sma=self._request_query_parameters["sma"] ,
+        image_dir, patterns_num = stock.plot_minmax_patterns(sma=self._request_query_parameters["sma"],
                                                              resistance_levels=self._request_query_parameters["res"],
                                                              formations=self._request_query_parameters["formations"])
         return {"image_dir": image_dir, "patterns_num": patterns_num}, 200
