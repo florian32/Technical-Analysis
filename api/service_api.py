@@ -29,23 +29,34 @@ class NewsListResource(QueryParamsParseMixin, Resource):
         return response, 200
 
 
-@api.resource("/analysis/<symbol>/<image_path>")
+@api.resource("/analysis/<symbol>")
 class StockAnalysisResource(QueryParamsParseMixin, Resource):
     query_params = {
         "timestamp": lambda req: str(req.args.get("timestamp")),
-        "analysis_types": lambda req: str(req.args.get("analysis_types", 3)).split(','),
+        "sma": lambda req: bool(req.args.get("sma", False)),
+        "file_path": lambda req: str(req.args.get("sma")),
+        "res": lambda req: bool(req.args.get("res", False)),
+        "formations": lambda req: bool(req.args.get("formations", False)),
     }
 
     def post(self, symbol) -> Tuple[Dict, int]:
         stock = Stock(symbol, self._request_query_parameters["timestamp"])
         stock.get_min_max()
         stock.find_patterns()
-        image_dir, patterns_num = stock.plot_minmax_patterns(sma=self._request_query_parameters["sma"] ,
+        image_dir, patterns_num = stock.plot_minmax_patterns(sma=self._request_query_parameters["sma"],
                                                              resistance_levels=self._request_query_parameters["res"],
                                                              formations=self._request_query_parameters["formations"])
         return {"image_dir": image_dir, "patterns_num": patterns_num}, 200
 
-    def delete(self, image_path) -> Tuple[Dict, int]:
+
+@api.resource("/delete")
+class FileDeletingResource(QueryParamsParseMixin, Resource):
+    query_params = {
+        "file_path": lambda req: str(req.args.get("file_path")),
+    }
+
+    def delete(self) -> Tuple[Dict, int]:
+        image_path = self._request_query_parameters["file_path"]
         if image_path and os.path.exists(image_path):
             os.remove(image_path)
             return {"message": "Image deleted successfully."}, 200
