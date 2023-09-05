@@ -48,14 +48,6 @@ class StockAnalysisResource(QueryParamsParseMixin, Resource):
                                                              formations=self._request_query_parameters["formations"])
         return {"image_dir": image_dir, "patterns_num": patterns_num}, 200
 
-    def delete(self) -> Tuple[Dict, int]:
-        image_path = self._request_query_parameters["image_path"]
-        if image_path and os.path.exists(image_path):
-            os.remove(image_path)
-            return {"message": "Image deleted successfully."}, 200
-        else:
-            return {"message": "Image not found or unable to delete."}, 404
-
 
 @api.resource("/delete")
 class FileDeletingResource(QueryParamsParseMixin, Resource):
