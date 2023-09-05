@@ -9,7 +9,7 @@ from . import QueryParamsParseMixin
 from db import User, Search, db
 from config import config
 
-blueprint = Blueprint("api/users", __name__, url_prefix="/api")
+blueprint = Blueprint("api/users", __name__, url_prefix="/api/users")
 api = Api(blueprint)
 
 
@@ -33,5 +33,6 @@ class UserResource(QueryParamsParseMixin, Resource):
             name=self._request_query_parameters["name"],
         )
         db.session.add(new_user)
-        db.session.commit(new_user)
+        db.session.commit()
+        return {"Success": "letsgo"}, 200
 
