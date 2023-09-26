@@ -1,14 +1,11 @@
 from flask import Flask, jsonify
+from flask import current_app as app
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import sessionmaker
+
 from config import config
 
-
-app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()
+db = SQLAlchemy()
 
 
 class User(db.Model):
