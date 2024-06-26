@@ -16,8 +16,11 @@ import yfinance as yf
 
 
 class Stock:
+    """
+    Class for storing stock info
+    """
     def __init__(self, symbol, timestamp):
-        self.max_min = None
+        self.max_min = "None"
         self.symbol = symbol
         self.timestamp = timestamp
         self.df = yf.download(tickers=self.symbol, period=timestamp)
